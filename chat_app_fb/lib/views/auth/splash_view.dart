@@ -1,6 +1,5 @@
 import 'package:chat_app_fb/routes/app_routes.dart';
 import 'package:chat_app_fb/theme/app_theme.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

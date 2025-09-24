@@ -88,7 +88,7 @@ class AuthService {
       await user.reauthenticateWithCredential(cred);
       await user.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
-      throw e; // throw trực tiếp để bên trên xử lý
+      throw e;
     } catch (e) {
       throw Exception("unknown-error");
     }

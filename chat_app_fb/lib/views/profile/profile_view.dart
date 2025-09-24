@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileView extends GetView<UserController> {
   const ProfileView({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

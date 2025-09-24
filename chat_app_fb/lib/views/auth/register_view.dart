@@ -187,7 +187,7 @@ class _RegisterViewState extends State<RegisterView> {
                     child: ElevatedButton(
                       onPressed: _register,
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 18.h), // thay cho height
+                        padding: EdgeInsets.symmetric(vertical: 18.h),
                       ),
                       child: Text(
                         'Sign Up',

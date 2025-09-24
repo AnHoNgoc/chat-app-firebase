@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 
 
 class UserController extends GetxController {
+
   final UserService _userService = UserService();
   final AuthController _authController = Get.find<AuthController>();
   final TextEditingController displayNameController = TextEditingController();
