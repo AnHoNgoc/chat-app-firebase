@@ -122,15 +122,13 @@ class ChangePasswordView extends StatelessWidget {
                             ? null
                             : () async {
                           final result = await controller.changePassword();
-                          print("Result: $result");
                           if (result == null) {
-                            print("Chạy vào đây");
                             Get.snackbar(
                               "Success",
                               "Password changed successfully",
                               backgroundColor: Colors.green,
                               colorText: Colors.white,
-                              duration: const Duration(seconds: 2), // 👈 giữ snackbar 2s
+                              duration: const Duration(seconds: 2),
                             );
                           }else {
                             Get.snackbar(

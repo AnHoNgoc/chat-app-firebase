@@ -334,7 +334,7 @@ class FireStoreService {
     }
   }
 
-  Future<bool> isUserFriended (String userId, String otherUserId) async {
+  Future<bool> isUnFriended (String userId, String otherUserId) async {
     try {
       List<String> userIds = [userId, otherUserId];
       userIds.sort();

@@ -1,5 +1,8 @@
 import 'package:chat_app_fb/controllers/main_controller.dart';
 import 'package:chat_app_fb/theme/app_theme.dart';
+import 'package:chat_app_fb/views/find_people_view.dart';
+import 'package:chat_app_fb/views/friends_view.dart';
+import 'package:chat_app_fb/views/home_view.dart';
 import 'package:chat_app_fb/views/profile/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,9 +17,9 @@ class MainView extends GetView<MainController> {
         controller: controller.pageController,
         onPageChanged: controller.onPageChanged,
         children: [
-          Container(),
-          Container(),
-          Container(),
+          HomeView(),
+          FriendsView(),
+          FindPeopleView(),
           ProfileView()
         ],
       ),

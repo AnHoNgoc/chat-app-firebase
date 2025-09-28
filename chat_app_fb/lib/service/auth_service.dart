@@ -1,7 +1,5 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../models/user_model.dart';
 
 class AuthService {
@@ -13,7 +11,6 @@ class AuthService {
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-// CREATE USER
   Future<UserModel?> createUser(Map<String, dynamic> data) async {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
@@ -94,7 +91,6 @@ class AuthService {
     }
   }
 
-// SEND PASSWORD RESET EMAIL
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
@@ -105,7 +101,6 @@ class AuthService {
     }
   }
 
-// LOGOUT
   Future<void> logoutUser() async {
     try {
       final uid = currentUserId;

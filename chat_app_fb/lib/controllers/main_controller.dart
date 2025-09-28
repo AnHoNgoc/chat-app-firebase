@@ -1,6 +1,9 @@
+import 'package:chat_app_fb/controllers/friends_controller.dart';
 import 'package:chat_app_fb/controllers/user_controller.dart';
+import 'package:chat_app_fb/controllers/users_list_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'home_controller.dart';
 
 
 class MainController extends GetxController {
@@ -13,6 +16,9 @@ class MainController extends GetxController {
   void onInit() {
     super.onInit();
 
+    Get.lazyPut(() => HomeController());
+    Get.lazyPut(() => FriendsController());
+    Get.lazyPut(() => UsersListController());
     Get.lazyPut(() => UserController());
   }
 
@@ -37,9 +43,9 @@ class MainController extends GetxController {
 
   int getUnreadCount() {
     try{
-     // final homeController = Get.find<HomeController>();
-     // return homeController.getTotalUnreadCount();
-     return 5;
+     final homeController = Get.find<HomeController>();
+     return homeController.getTotalUnreadCount();
+
     } catch (e) {
       return 0;
     }
@@ -47,9 +53,8 @@ class MainController extends GetxController {
 
   int getNotificationCount() {
     try{
-      // final homeController = Get.find<HomeController>();
-      // return homeController.getTotalNotificationCount();
-      return 7;
+      final homeController = Get.find<HomeController>();
+      return homeController.getUnreadNotificationsCount();
     } catch (e) {
       return 0;
     }
