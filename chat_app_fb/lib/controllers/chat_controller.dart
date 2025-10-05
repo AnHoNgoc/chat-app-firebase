@@ -1,6 +1,5 @@
 import 'package:chat_app_fb/models/message_model.dart';
 import 'package:chat_app_fb/models/user_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
@@ -52,7 +51,6 @@ class ChatController extends GetxController {
   @override
   void onClose() {
     _isChatActive.value = false;
-    _markMessageAsRead();
     super.onClose();
   }
 
@@ -62,7 +60,7 @@ class ChatController extends GetxController {
       _chatId.value = arguments['chatId'] ?? '';
       _otherUSer.value = arguments['otherUser'];
       _loadMessages();
-      _markMessageAsRead();
+      print("Đã gọi trong controller");
     }
   }
 
@@ -70,14 +68,17 @@ class ChatController extends GetxController {
     final currentUserId = _authController.user?.uid;
     final otherUserId = _otherUSer.value?.id;
 
-    if(currentUserId != null && otherUserId != null){
+    if (currentUserId != null && otherUserId != null) {
+      _isLoading.value = true;
+
       _messages.bindStream(
-       _fireStoreService.getMessagesStream(currentUserId, otherUserId)
+          _fireStoreService.getMessagesStream(currentUserId, otherUserId)
       );
 
-      ever(_messages, (List<MessageModel> messageList){
-        if(_isChatActive.value){
-          _markUnReadMessagesAsRead(messageList);
+      ever(_messages, (List<MessageModel> messageList) {
+        _isLoading.value = false;
+        if (_isChatActive.value) {
+          _markUnreadMessagesAsRead(messageList);
         }
         _scrollToBottom();
       });
@@ -96,30 +97,46 @@ class ChatController extends GetxController {
     });
   }
 
-  Future<void> _markUnReadMessagesAsRead(List<MessageModel> messageList) async {
+  Future<void> _markUnreadMessagesAsRead(List<MessageModel> messageList) async {
     final currentUserId = _authController.user?.uid;
-    if(currentUserId == null) return;
+    if (currentUserId == null) return;
 
     try {
+      // 1. Lọc các message chưa đọc
       final unreadMessages = messageList.where((message) =>
-          message.receiverId == currentUserId && !message.isRead && message.senderId != currentUserId
+      message.receiverId == currentUserId &&
+          message.senderId != currentUserId &&
+          !message.isRead
       ).toList();
 
+      if (unreadMessages.isEmpty) return;
+
+      // 2. Đánh dấu tin nhắn đã đọc
       for (var message in unreadMessages) {
-        await _fireStoreService.markNotificationAsRead(message.id);
+        await _fireStoreService.markMessageAsRead(message.id);
       }
 
-      if(unreadMessages.isNotEmpty && _chatId.value.isNotEmpty){
+      // 3. Đánh dấu thông báo liên quan đã đọc
+      // for (var message in unreadMessages) {
+      //   print("Tin nhắn đã đọc");
+      //   await _fireStoreService.markNotificationAsRead(message.id);
+      // }
+
+      // 4. Reset unreadCount trong ChatModel
+      if (_chatId.value.isNotEmpty) {
+        print('Calling restoreUnreadCount with chatId: ${_chatId.value}, userId: $currentUserId');
         await _fireStoreService.restoreUnreadCount(_chatId.value, currentUserId);
       }
 
-      if(_chatId.value.isNotEmpty){
+      // 5. Update lastSeen
+      if (_chatId.value.isNotEmpty) {
         await _fireStoreService.updateUserLastSeen(_chatId.value, currentUserId);
       }
     } catch (e) {
-      print(e);
+      print("Error marking messages as read: $e");
     }
   }
+
 
   Future <void> deleteChat() async {
     try {
@@ -203,20 +220,11 @@ class ChatController extends GetxController {
     }
   }
 
-  Future<void> _markMessageAsRead() async {
-    final currentUserId = _authController.user?.uid;
-    if(currentUserId != null && _chatId.value.isNotEmpty){
-      try {
-        await _fireStoreService.restoreUnreadCount(_chatId.value, currentUserId);
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
+
 
   void onChatResumed(){
     _isChatActive.value = true;
-    _markUnReadMessagesAsRead(_messages);
+    _markUnreadMessagesAsRead(_messages);
   }
 
   void onChatPaused(){

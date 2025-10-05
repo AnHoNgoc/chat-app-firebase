@@ -109,7 +109,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
           width: double.infinity,
           child: ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 22.h),
+              padding: EdgeInsets.symmetric(vertical: 18.h),
               alignment: Alignment.center,
             ),
             onPressed: controller.isLoading

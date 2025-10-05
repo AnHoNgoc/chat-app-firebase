@@ -6,9 +6,11 @@ import '../../theme/app_theme.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileView extends GetView<UserController> {
+
   const ProfileView({super.key});
   @override
   Widget build(BuildContext context) {
+    print(">>> ProfileView build() chạy với controller:");
     return Scaffold(
       appBar: AppBar(
         title: Text("Profile", style: TextStyle(fontSize: 18.sp, color: AppTheme.textPrimaryColor)),

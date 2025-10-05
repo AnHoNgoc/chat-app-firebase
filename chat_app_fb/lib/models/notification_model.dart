@@ -33,7 +33,7 @@ class NotificationModel {
       'userId': userId,
       'title': title,
       'body': body,
-      'type': type.name, // lưu enum bằng name
+      'type': type.name,
       'data': data,
       'isRead': isRead,
       'createdAt': createdAt.microsecondsSinceEpoch,

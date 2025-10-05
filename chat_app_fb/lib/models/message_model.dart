@@ -30,7 +30,7 @@ class MessageModel {
       'senderId': senderId,
       'receiverId': receiverId,
       'content': content,
-      'type': type.toString().split('.').last, // lưu dưới dạng string (vd: "text")
+      'type': type.toString().split('.').last,
       'timestamp': timestamp.microsecondsSinceEpoch,
       'isRead': isRead,
       'isEdited': isEdited,

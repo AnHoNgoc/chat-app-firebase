@@ -46,31 +46,62 @@ class UsersListController extends GetxController {
     super.onInit();
     _loadUsers();
     _loadRelationships();
+
     debounce(
-      _sentRequests,
-      (_) => _filterUsers(),
-      time: Duration(milliseconds: 300)
+      _searchQuery,
+          (_) => _filterUsers(),
+      time: Duration(milliseconds: 300),
     );
   }
 
+  void _filterUsers() {
+
+    final currentUserId = _authController.user?.uid;
+    final query = _searchQuery.value.toLowerCase();
+
+
+    if (query.isEmpty) {
+      _filteredUsers.value = _users
+          .where((user) => user.id != currentUserId)
+          .toList();
+    } else {
+      _filteredUsers.value = _users.where((user) {
+        final match = user.id != currentUserId &&
+            (user.displayName.toLowerCase().contains(query) ||
+                user.email.toLowerCase().contains(query));
+        return match;
+      }).toList();
+    }
+  }
+
+  void updateSearchQuery(String query) {
+    print("updateSearchQuery gọi từ controller: $hashCode, query: $query");
+    _searchQuery.value = query;
+
+  }
+
   void _loadUsers() async {
+    _isLoading.value = true;
+
     _users.bindStream(_fireStoreService.getAllUsersStream());
 
-    ever(_users, (List<UserModel> userList){
+    ever(_users, (List<UserModel> userList) {
       final currentUserId = _authController.user?.uid;
       final otherUsers = userList.where((user) => user.id != currentUserId).toList();
 
-      if  (_searchQuery.isEmpty){
+      if (_searchQuery.value.isEmpty) {
         _filteredUsers.value = otherUsers;
       } else {
         _filterUsers();
       }
+
+      _isLoading.value = false;
     });
   }
-  
+
   void _loadRelationships(){
     final currentUserId = _authController.user?.uid;
-    
+
     if(currentUserId != null){
       _sentRequests.bindStream(
         _fireStoreService.getSentRequestsStream(currentUserId)
@@ -141,27 +172,7 @@ class UsersListController extends GetxController {
     return UserRelationshipStatus.none;
   }
 
-  void _filterUsers() {
-    final currentUserId = _authController.user?.uid;
-    final query = _searchQuery.value.toLowerCase();
 
-    if(query.isEmpty) {
-      _filteredUsers.value = _users
-          .where((user) => user.id != currentUserId)
-          .toList();
-    } else {
-      _filteredUsers.value = _users.where((user) {
-        return user.id != currentUserId &&
-            (user.displayName.toLowerCase().contains(query) || 
-                user.email.toLowerCase().contains(query)
-            );
-      }).toList();
-    }
-  }
-
-  void updateSearchQuery(String query) {
-    _searchQuery.value = query;
-  }
 
   void clearSearch() {
     _searchQuery.value = '';

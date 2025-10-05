@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
@@ -16,95 +17,118 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.light(
-        primary: primaryColor,
-        secondary: secondaryColor,
-        surface: backgroundColor,
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
-        error: errorColor,
-        onSurface: textPrimaryColor,
-        onBackground: textPrimaryColor),
+      primary: primaryColor,
+      secondary: secondaryColor,
+      surface: backgroundColor,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
+      error: errorColor,
+      onSurface: textPrimaryColor,
+      onBackground: textPrimaryColor,
+    ),
 
+    // ✅ Text theme with ScreenUtil
     textTheme: GoogleFonts.poppinsTextTheme().copyWith(
       headlineLarge: GoogleFonts.poppins(
-        fontSize: 32,
+        fontSize: 32.sp,
         fontWeight: FontWeight.bold,
         color: textPrimaryColor,
       ),
       headlineMedium: GoogleFonts.poppins(
-        fontSize: 24,
+        fontSize: 24.sp,
         fontWeight: FontWeight.w600,
         color: textPrimaryColor,
       ),
       headlineSmall: GoogleFonts.poppins(
-        fontSize: 20,
+        fontSize: 20.sp,
         fontWeight: FontWeight.w500,
         color: textPrimaryColor,
       ),
       bodyLarge: GoogleFonts.poppins(
-        fontSize: 16,
+        fontSize: 16.sp,
         fontWeight: FontWeight.normal,
         color: textPrimaryColor,
       ),
       bodyMedium: GoogleFonts.poppins(
-        fontSize: 14,
+        fontSize: 14.sp,
         fontWeight: FontWeight.normal,
         color: textPrimaryColor,
       ),
       bodySmall: GoogleFonts.poppins(
-        fontSize: 12,
+        fontSize: 12.sp,
         fontWeight: FontWeight.normal,
         color: textSecondaryColor,
       ),
     ),
+
+    // ✅ AppBar theme
     appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: textPrimaryColor,
-        ),
-        iconTheme: IconThemeData(color: textPrimaryColor)),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: TextStyle(
+        fontSize: 18.sp,
+        fontWeight: FontWeight.w600,
+        color: textPrimaryColor,
+      ),
+      iconTheme: const IconThemeData(color: textPrimaryColor),
+    ),
+
+    // ✅ Elevated button
     elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            textStyle: GoogleFonts.poppins(
-                fontSize: 16, fontWeight: FontWeight.w600))),
-    cardTheme: CardThemeData(
-        color: cardColor,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
         elevation: 0,
+        padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 16.h),
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: borderColor, width: 1))),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        textStyle: GoogleFonts.poppins(
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+
+    // ✅ Card theme
+    cardTheme: CardThemeData(
+      color: cardColor,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        side: const BorderSide(color: borderColor, width: 1),
+      ),
+    ),
+
+    // ✅ Input decoration
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: cardColor,
       border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: borderColor)),
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: const BorderSide(color: borderColor),
+      ),
       focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: primaryColor, width: 2)),
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: const BorderSide(color: primaryColor, width: 2),
+      ),
       enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: borderColor)),
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: const BorderSide(color: borderColor),
+      ),
       errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: errorColor)),
-      contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16)
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: const BorderSide(color: errorColor),
+      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
     ),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
+
+    // ✅ FAB theme
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: primaryColor,
       foregroundColor: Colors.white,
-      elevation: 0
-    )
+      elevation: 0,
+    ),
   );
 }

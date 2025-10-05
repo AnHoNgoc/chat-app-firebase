@@ -1,5 +1,6 @@
-class ChatModel {
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+class ChatModel {
   final String id;
   final List<String> participants;
   final String? lastMessage;
@@ -31,18 +32,18 @@ class ChatModel {
       'id': id,
       'participants': participants,
       'lastMessage': lastMessage,
-      'lastMessageTime': lastMessageTime?.microsecondsSinceEpoch,
+      'lastMessageTime': lastMessageTime?.millisecondsSinceEpoch,
       'lastMessageSenderId': lastMessageSenderId,
       'unreadCount': unreadCount,
       'deleteBy': deleteBy,
       'deleteAt': deleteAt.map(
-          (key,value) => MapEntry(key, value?.microsecondsSinceEpoch)
+            (key, value) => MapEntry(key, value?.millisecondsSinceEpoch),
       ),
       'lastSeenBy': lastSeenBy.map(
-          (key,value) => MapEntry(key, value?.microsecondsSinceEpoch)
+            (key, value) => MapEntry(key, value?.millisecondsSinceEpoch),
       ),
-      'createAt': createAt.microsecondsSinceEpoch,
-      'updateAt': updateAt.microsecondsSinceEpoch,
+      'createAt': createAt.millisecondsSinceEpoch,
+      'updateAt': updateAt.millisecondsSinceEpoch,
     };
   }
 
@@ -50,11 +51,11 @@ class ChatModel {
     // Xử lý lastSeenBy
     Map<String, DateTime?> lastSeenMap = {};
     if (map['lastSeenBy'] != null) {
-      Map<String, dynamic> rawLastSeen = Map<String, dynamic>.from(map['lastSeenBy']);
+      final rawLastSeen = Map<String, dynamic>.from(map['lastSeenBy']);
       lastSeenMap = rawLastSeen.map(
             (key, value) => MapEntry(
           key,
-          value != null ? DateTime.fromMicrosecondsSinceEpoch(value) : null,
+          value != null ? DateTime.fromMillisecondsSinceEpoch(value) : null,
         ),
       );
     }
@@ -62,11 +63,11 @@ class ChatModel {
     // Xử lý deleteAt
     Map<String, DateTime?> deleteAtMap = {};
     if (map['deleteAt'] != null) {
-      Map<String, dynamic> rawDeleteAt = Map<String, dynamic>.from(map['deleteAt']);
+      final rawDeleteAt = Map<String, dynamic>.from(map['deleteAt']);
       deleteAtMap = rawDeleteAt.map(
             (key, value) => MapEntry(
           key,
-          value != null ? DateTime.fromMicrosecondsSinceEpoch(value) : null,
+          value != null ? DateTime.fromMillisecondsSinceEpoch(value) : null,
         ),
       );
     }
@@ -76,15 +77,17 @@ class ChatModel {
       participants: List<String>.from(map['participants'] ?? []),
       lastMessage: map['lastMessage'],
       lastMessageTime: map['lastMessageTime'] != null
-          ? DateTime.fromMicrosecondsSinceEpoch(map['lastMessageTime'])
+          ? (map['lastMessageTime'] is int
+          ? DateTime.fromMillisecondsSinceEpoch(map['lastMessageTime'])
+          : (map['lastMessageTime'] as Timestamp).toDate())
           : null,
       lastMessageSenderId: map['lastMessageSenderId'],
       unreadCount: Map<String, int>.from(map['unreadCount'] ?? {}),
       deleteBy: Map<String, bool>.from(map['deleteBy'] ?? {}),
       deleteAt: deleteAtMap,
       lastSeenBy: lastSeenMap,
-      createAt: DateTime.fromMicrosecondsSinceEpoch(map['createAt']),
-      updateAt: DateTime.fromMicrosecondsSinceEpoch(map['updateAt']),
+      createAt: DateTime.fromMillisecondsSinceEpoch(map['createAt']),
+      updateAt: DateTime.fromMillisecondsSinceEpoch(map['updateAt']),
     );
   }
 

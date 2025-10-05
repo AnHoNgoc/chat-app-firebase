@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'home_controller.dart';
 
-
 class MainController extends GetxController {
+
   final RxInt _currentIndex = 0.obs;
   final PageController pageController = PageController();
 

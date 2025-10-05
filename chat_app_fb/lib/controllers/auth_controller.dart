@@ -33,9 +33,7 @@ class AuthController extends GetxController {
   void _handleAuthStateChange(User? user) async {
     if (user == null) {
       _userModel.value = null; // reset khi logout
-      if (Get.currentRoute != AppRoutes.login) {
-        Get.offAllNamed(AppRoutes.login);
-      }
+      // không điều hướng ở đây
     } else {
       // Bind stream UserModel từ Firestore
       _userModel.bindStream(_userService.streamUser(user.uid));
@@ -45,16 +43,14 @@ class AuthController extends GetxController {
         final uc = Get.find<UserController>();
         uc.updateCurrentUserStream(user.uid);
       }
-      // Chỉ chuyển route nếu chưa phải profile
-      if (Get.currentRoute != AppRoutes.main) {
-        Get.offAllNamed(AppRoutes.main);
-      }
+      // không điều hướng ở đây
     }
 
     if (!_isInitialized.value) {
       _isInitialized.value = true;
     }
   }
+
 
   void checkInitialAuthState(){
     final currentUser = FirebaseAuth.instance.currentUser;

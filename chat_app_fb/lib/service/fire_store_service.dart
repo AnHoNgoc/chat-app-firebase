@@ -20,7 +20,7 @@ class FireStoreService {
 
   Future<void> sendFriendRequest(FriendRequestModel request) async {
     try {
-      await _fireStore.collection('friendRequest').doc(request.id).set(request.toMap());
+      await _fireStore.collection('friendRequests').doc(request.id).set(request.toMap());
 
       String notificationId = 'friend_request_${request.senderId}_${request.receiverId}_${DateTime.now().microsecondsSinceEpoch}';
 
@@ -50,7 +50,7 @@ class FireStoreService {
           requestDoc.data() as Map<String, dynamic>
         );
 
-        await _fireStore.collection('friendRequest').doc(requestId).delete();
+        await _fireStore.collection('friendRequests').doc(requestId).delete();
 
         await deleteNotificationsByTypeAndUser(
           request.receiverId,
@@ -68,13 +68,13 @@ class FireStoreService {
       FriendRequestStatus status,
   ) async {
     try {
-      await _fireStore.collection('friendRequest').doc(requestId).update({
+      await _fireStore.collection('friendRequests').doc(requestId).update({
         'status':status.name,
         'respondedAt': DateTime.now().millisecondsSinceEpoch
       });
 
       DocumentSnapshot requestDoc = await _fireStore
-          .collection('friendRequest')
+          .collection('friendRequests')
           .doc(requestId)
           .get();
 
@@ -159,7 +159,7 @@ class FireStoreService {
       QuerySnapshot query = await _fireStore
           .collection('friendRequests')
           .where('senderId', isEqualTo: senderId)
-          .where('receiver', isEqualTo: receiverId )
+          .where('receiverId', isEqualTo: receiverId )
           .where('status', isEqualTo: 'pending')
           .get();
 
@@ -258,7 +258,7 @@ class FireStoreService {
         'isBlocked': false,
         'blockedBy' : null
       });
-    }catch (e) {
+    } catch (e) {
       throw Exception('Failed to unblock user: ${e.toString()}');
     }
   }
@@ -475,6 +475,7 @@ class FireStoreService {
   }
 
   Future<void> restoreUnreadCount(String chatId, String userId) async {
+    print("Da doc tin nhan");
     try{
       await _fireStore.collection('chats').doc(chatId).update({
         'unreadCount.$userId': 0,
@@ -484,10 +485,7 @@ class FireStoreService {
     }
   }
 
-
-
   //MESSAGE
-
   Future<void>  sendMessage(MessageModel message) async {
     try {
       await _fireStore

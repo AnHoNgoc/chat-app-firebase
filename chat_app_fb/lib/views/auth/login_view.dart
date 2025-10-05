@@ -1,11 +1,10 @@
-import 'package:chat_app_fb/controllers/auth_controller.dart';
+ import 'package:chat_app_fb/controllers/auth_controller.dart';
 import 'package:chat_app_fb/theme/app_theme.dart';
 import 'package:chat_app_fb/utils/app_validator.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
-
 import '../../routes/app_routes.dart';
 
 class LoginView extends StatefulWidget {
@@ -66,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
                 Center(
                   child: SizedBox(
                     width: 300.w,
-                    height: 250.w,
+                    height: 200.w,
                     child: Lottie.asset(
                       'assets/animation/login.json', // đường dẫn file Lottie trong project
                       fit: BoxFit.cover,
@@ -138,7 +137,7 @@ class _LoginViewState extends State<LoginView> {
                     child: ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16.h), // padding theo ScreenUtil
+                        padding: EdgeInsets.symmetric(vertical: 14.h), // padding theo ScreenUtil
                       ),
                       child: Text(
                         'Sign In',

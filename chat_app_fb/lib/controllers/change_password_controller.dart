@@ -1,4 +1,3 @@
-import 'package:chat_app_fb/controllers/auth_controller.dart';
 import 'package:chat_app_fb/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,7 +5,6 @@ import 'package:get/get.dart';
 
 class ChangePasswordController extends GetxController {
 
-  final AuthController _authController = Get.find<AuthController>();
   final AuthService _authService = AuthService();
 
   final TextEditingController oldPasswordController = TextEditingController();
@@ -75,8 +73,8 @@ class ChangePasswordController extends GetxController {
     } on FirebaseAuthException catch (e) {
       print("FirebaseAuthException: ${e.code}");
       switch (e.code) {
-        case 'wrong-password': // SDK cũ có thể trả về
-        case 'invalid-credential': // SDK mới thường trả về
+        case 'wrong-password':
+        case 'invalid-credential':
           return "Old password is incorrect.";
         case 'weak-password':
           return "New password is too weak.";

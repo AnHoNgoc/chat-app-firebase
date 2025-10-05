@@ -41,6 +41,23 @@ class FriendsController extends GetxController {
     );
   }
 
+  void _filterFriends() {
+    final query = _searchQuery.value.toLowerCase();
+
+    if(query.isEmpty){
+      _filteredFriends.value = _friends;
+    } else {
+      _filteredFriends.value = _friends.where((friend) {
+        return friend.displayName.toLowerCase().contains(query) ||
+            friend.email.toLowerCase().contains(query);
+      }).toList();
+    }
+  }
+
+  void updateSearchQuery(String query) {
+    _searchQuery.value = query;
+  }
+
   @override
   void onClose() {
     _friendshipsSubscriptions?.cancel();
@@ -49,15 +66,16 @@ class FriendsController extends GetxController {
 
   void _loadFriends() {
     final currentUserId = _authController.user?.uid;
-    if(currentUserId != null){
+    if (currentUserId != null) {
+      _isLoading.value = true; // 🔹 bật loading ngay từ đầu
+
       _friendshipsSubscriptions?.cancel();
-
       _friendshipsSubscriptions = _fireStoreService.getFriendsStream(currentUserId)
-      .listen((friendshipList){
+          .listen((friendshipList) async {
         _friendships.value = friendshipList;
-        _loadFriendDetails(currentUserId, friendshipList);
+        await _loadFriendDetails(currentUserId, friendshipList);
+        _isLoading.value = false; // 🔹 tắt sau khi có dữ liệu
       });
-
     }
   }
 
@@ -87,26 +105,8 @@ class FriendsController extends GetxController {
     } finally {
       _isLoading.value = false;
     }
-
   }
 
-
-  void _filterFriends() {
-    final query = _searchQuery.toLowerCase();
-
-    if(query.isEmpty){
-      _filteredFriends.value = _friends;
-    } else {
-      _filteredFriends.value = _friends.where((friend) {
-        return friend.displayName.toLowerCase().contains(query) ||
-        friend.email.toLowerCase().contains(query);
-      }).toList();
-    }
-  }
-
-  void updateSearchQuery(String query) {
-    _searchQuery.value = query;
-  }
 
   void clearSearch() {
     _searchQuery.value = '';

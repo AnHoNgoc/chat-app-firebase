@@ -24,26 +24,31 @@ class _SplashViewState extends State<SplashView>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     );
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeIn));
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeIn));
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
     _animationController.forward();
 
-    _checkAuthNavigate();
+    // Đợi 1 frame để splash render trước
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuthNavigate();
+    });
   }
 
   void _checkAuthNavigate() async {
     final authController = Get.put(AuthController(), permanent: true);
 
-    // Delay để animation hiển thị
+    // đảm bảo splash hiển thị ít nhất 2s
     await Future.delayed(const Duration(seconds: 2));
 
-    final user = authController.userRx.value; // Lấy giá trị hiện tại
-
+    final user = authController.userRx.value;
     if (user != null) {
       Get.put(UserController(), permanent: true);
       Get.offAllNamed(AppRoutes.main);
@@ -51,6 +56,8 @@ class _SplashViewState extends State<SplashView>
       Get.offAllNamed(AppRoutes.login);
     }
   }
+
+
   @override
   void dispose() {
     _animationController.dispose();

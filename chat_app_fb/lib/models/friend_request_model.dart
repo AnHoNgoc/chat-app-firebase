@@ -1,5 +1,7 @@
 enum FriendRequestStatus {pending, accepted, declined}
+
 class FriendRequestModel {
+
   final String id;
   final String senderId;
   final String receiverId;
@@ -18,13 +20,12 @@ class FriendRequestModel {
     this.message,
   });
 
-  /// Convert to Map (để lưu Firestore / DB)
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'senderId': senderId,
       'receiverId': receiverId,
-      'status': status.name , // Lưu dạng string: "pending", "accepted", "rejected"
+      'status': status.name,
       'createdAt': createdAt.microsecondsSinceEpoch,
       'respondedAt': respondedAt?.microsecondsSinceEpoch,
       'message': message,
@@ -48,7 +49,6 @@ class FriendRequestModel {
     );
   }
 
-  /// copyWith (để update trạng thái hoặc message)
   FriendRequestModel copyWith({
     String? id,
     String? senderId,

@@ -6,6 +6,7 @@ import '../service/fire_store_service.dart';
 import 'auth_controller.dart';
 
 class FriendRequestsController extends GetxController {
+
   final FireStoreService _fireStoreService = FireStoreService();
   final AuthController _authController = Get.find<AuthController>();
 
