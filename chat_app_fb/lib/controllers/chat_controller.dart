@@ -3,6 +3,7 @@ import 'package:chat_app_fb/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
+import '../models/notification_model.dart';
 import '../service/fire_store_service.dart';
 import 'auth_controller.dart';
 
@@ -60,7 +61,6 @@ class ChatController extends GetxController {
       _chatId.value = arguments['chatId'] ?? '';
       _otherUSer.value = arguments['otherUser'];
       _loadMessages();
-      print("Đã gọi trong controller");
     }
   }
 
@@ -116,12 +116,6 @@ class ChatController extends GetxController {
         await _fireStoreService.markMessageAsRead(message.id);
       }
 
-      // 3. Đánh dấu thông báo liên quan đã đọc
-      // for (var message in unreadMessages) {
-      //   print("Tin nhắn đã đọc");
-      //   await _fireStoreService.markNotificationAsRead(message.id);
-      // }
-
       // 4. Reset unreadCount trong ChatModel
       if (_chatId.value.isNotEmpty) {
         print('Calling restoreUnreadCount with chatId: ${_chatId.value}, userId: $currentUserId');
@@ -130,6 +124,7 @@ class ChatController extends GetxController {
 
       // 5. Update lastSeen
       if (_chatId.value.isNotEmpty) {
+        print('Đã update');
         await _fireStoreService.updateUserLastSeen(_chatId.value, currentUserId);
       }
     } catch (e) {
@@ -183,16 +178,17 @@ class ChatController extends GetxController {
   }
 
   Future<void> sendMessage() async {
-    final currentUSerId = _authController.user?.uid;
+    final currentUserId = _authController.user?.uid;
     final otherUserId = _otherUSer.value?.id;
     final content = messageController.text.trim();
     messageController.clear();
 
-    if(currentUSerId == null || otherUserId == null || content.isEmpty){
+    if (currentUserId == null || otherUserId == null || content.isEmpty) {
       Get.snackbar('Error', 'You cannot send messages to this user');
       return;
     }
-    if(await _fireStoreService.isUnFriended(currentUSerId, otherUserId)){
+
+    if (await _fireStoreService.isUnFriended(currentUserId, otherUserId)) {
       Get.snackbar('Error', 'You cannot send messages to this user as you are not friends');
       return;
     }
@@ -202,25 +198,24 @@ class ChatController extends GetxController {
 
       final message = MessageModel(
         id: _uuid.v4(),
-        senderId: currentUSerId,
+        senderId: currentUserId,
         receiverId: otherUserId,
         content: content,
         type: MessageType.text,
-        timestamp: DateTime.now()
+        timestamp: DateTime.now(),
       );
 
       await _fireStoreService.sendMessage(message);
       _isTyping.value = false;
       _scrollToBottom();
+
     } catch (e) {
-      Get.snackbar('Error', 'You cannot send message');
+      Get.snackbar('Error', 'Failed to send message');
       print(e);
     } finally {
       _isSending.value = false;
     }
   }
-
-
 
   void onChatResumed(){
     _isChatActive.value = true;

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app_fb/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../routes/app_routes.dart';
 import '../../theme/app_theme.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -273,16 +274,34 @@ class ProfileView extends GetView<UserController> {
                       onTap: () {
                         Get.dialog(
                           AlertDialog(
-                            title: Text("Confirm Logout"),
-                            content: Text("Are you sure you want to sign out?"),
+                            title: const Text("Confirm Logout"),
+                            content: const Text("Are you sure you want to sign out?"),
                             actions: [
-                              TextButton(onPressed: () => Get.back(), child: Text("Cancel")),
                               TextButton(
-                                onPressed: () async {
-                                  await controller.signOut();
-                                },
-                                child: Text("Sign Out", style: TextStyle(color: AppTheme.errorColor)),
+                                onPressed: () => Get.back(),
+                                child: const Text("Cancel"),
                               ),
+                              Obx(() => TextButton(
+                                onPressed: controller.isLoading
+                                    ? null
+                                    : () async {
+                                  await controller.signOut();
+                                  if (!controller.isLoading) {
+                                    Get.back();
+                                    Get.offAllNamed(AppRoutes.login);
+                                  }
+                                },
+                                child: controller.isLoading
+                                    ? const SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                                    : const Text(
+                                  "Sign Out",
+                                  style: TextStyle(color: AppTheme.errorColor),
+                                ),
+                              )),
                             ],
                           ),
                           barrierDismissible: false,

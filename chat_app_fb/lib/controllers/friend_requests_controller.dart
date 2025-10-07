@@ -17,7 +17,6 @@ class FriendRequestsController extends GetxController {
   final RxString _error = ''.obs;
   final RxInt _selectedTabIndex = 0.obs;
 
-
   List<FriendRequestModel> get receiveRequest => _receiveRequest;
   List<FriendRequestModel> get sentRequest => _sentRequest;
   Map<String,UserModel> get users => _users;

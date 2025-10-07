@@ -11,7 +11,6 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    print(">>> Home build() chạy với controller:");
 
     final AuthController authController = Get.find<AuthController>();
 
@@ -28,13 +27,16 @@ class HomeView extends GetView<HomeController> {
             child: RefreshIndicator(
               onRefresh: controller.refreshChats,
               child: Obx(() {
+                if (controller.isLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
                 if (controller.chats.isEmpty) {
-                  if (controller.isSearching &&
-                      controller.searchQuery.isNotEmpty) {
+                  if (controller.isSearching && controller.searchQuery.isNotEmpty) {
                     return _buildNoSearchResults();
                   } else if (controller.activeFilter != 'All') {
                     return _buildNoFilterResults();
-                  } else {
+                  } else  {
                     return _buildEmptyState();
                   }
                 }

@@ -392,6 +392,19 @@ class FireStoreService {
     }
   }
 
+  Future<List<ChatModel>> getUserChatsOnce(String userId) async {
+    final snapshot = await _fireStore
+        .collection('chats')
+        .where('participants', arrayContains: userId)
+        .orderBy('updateAt', descending: true)
+        .get(); // <--- chỉ lấy 1 lần, không phải snapshots()
+
+    return snapshot.docs
+        .map((doc) => ChatModel.fromMap(doc.data()))
+        .where((chat) => !chat.isDeleteBy(userId))
+        .toList();
+  }
+
   Stream<List<ChatModel>> getUserChatsStream(String userId) {
     return _fireStore
         .collection('chats')
@@ -480,6 +493,7 @@ class FireStoreService {
       await _fireStore.collection('chats').doc(chatId).update({
         'unreadCount.$userId': 0,
       });
+
     }catch (e) {
       throw Exception('Failed to rest unread count: ${e.toString()}');
     }
@@ -515,11 +529,13 @@ class FireStoreService {
         int currentUnread = chat.getUnreadCount(message.receiverId);
 
         await updateUnreadCount(chatId, message.receiverId, currentUnread +1);
+
       }
     } catch (e){
       throw Exception('Failed to send message: ${e.toString()}');
     }
   }
+
 
   Stream<List<MessageModel>> getMessagesStream (String userId1, String userId2) {
     return _fireStore.collection('message').where(
@@ -561,7 +577,6 @@ class FireStoreService {
               }
             }
           }
-
           messages.sort((a,b) => a.timestamp.compareTo(b.timestamp));
           return messages;
     });

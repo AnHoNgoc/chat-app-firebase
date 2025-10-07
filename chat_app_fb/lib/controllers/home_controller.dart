@@ -23,9 +23,9 @@ class HomeController extends GetxController {
   final RxString _activeFilter = 'All'.obs;
 
   List<ChatModel> get chats => _getFilteredChats();
-  List<ChatModel> get allChats => _allChats();
-  List<ChatModel> get filteredChats => _filteredChats();
-  List<NotificationModel> get notifications => _notifications();
+  List<ChatModel> get allChats => _allChats;
+  List<ChatModel> get filteredChats => _filteredChats;
+  List<NotificationModel> get notifications => _notifications;
   bool get isLoading => _isLoading.value;
   String get error => _error.value;
   String get searchQuery => _searchQuery.value;
@@ -35,30 +35,46 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
+
     _loadChats();
     _loadUsers();
     _loadNotifications();
   }
 
-  void _loadChats() {
+  void _loadChats() async {
     final currentUserId = _authController.user?.uid;
+    if (currentUserId == null) return;
 
-    if(currentUserId != null) {
-      _allChats.bindStream(_fireStoreService.getUserChatsStream(currentUserId));
+    _isLoading.value = true;
 
+    try {
+
+      final initialChats = await _fireStoreService.getUserChatsOnce(currentUserId);
+      _allChats.value = initialChats;
+
+
+      _allChats.bindStream(
+        _fireStoreService.getUserChatsStream(currentUserId)
+            .map((chats) => chats),
+      );
+
+   
       ever(_allChats, (_) {
-        if(_isSearching.value && _searchQuery.value.isNotEmpty){
+        if (_isSearching.value && _searchQuery.value.isNotEmpty) {
           _performSearch(_searchQuery.value);
         }
       });
 
       ever(_activeFilter, (_) {
-        if(_searchQuery.value.isNotEmpty){
+        if (_searchQuery.value.isNotEmpty) {
           _performSearch(_searchQuery.value);
         }
       });
+    } catch (e) {
+      _error.value = 'Failed to load chats: ${e.toString()}';
+    } finally {
+      _isLoading.value = false;
     }
   }
 
@@ -112,6 +128,7 @@ class HomeController extends GetxController {
   }
 
   List<ChatModel> _getFilteredChats() {
+
     List<ChatModel> baseList = _isSearching.value ? _filteredChats : _allChats;
     switch(_activeFilter.value){
       case 'Unread':
@@ -153,7 +170,6 @@ class HomeController extends GetxController {
 
   void setFilter(String filterType) {
     _activeFilter.value = filterType;
-
     if (filterType == 'All') {
       if (_searchQuery.value.isEmpty){
         _isSearching.value = false;
@@ -176,7 +192,6 @@ class HomeController extends GetxController {
       _performSearch(query);
     }
   }
-
 
   void _performSearch(String query) {
     final lowercaseQuery = query.toLowerCase().trim();
@@ -212,7 +227,6 @@ class HomeController extends GetxController {
         a.lastMessageTime ?? DateTime(0)
       );
     });
-
   }
 
   void _clearSearch() {
@@ -330,6 +344,7 @@ class HomeController extends GetxController {
   }
 
   Future<void> deleteChat(ChatModel chat) async {
+
     try {
       final currentUserId = _authController.user?.uid;
       if(currentUserId == null) return;
@@ -376,4 +391,5 @@ class HomeController extends GetxController {
   void onClose() {
     super.onClose();
   }
+
 }

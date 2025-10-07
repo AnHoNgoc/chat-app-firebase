@@ -103,12 +103,16 @@ class UserController extends GetxController {
       _isLoading.value = false;
     }
   }
-
   Future<void> signOut() async {
+    if (_isLoading.value) return; // tránh gọi lại nhiều lần
+    _isLoading.value = true;
+
     try {
       await _authController.logout();
     } catch (e) {
       _error.value = "Failed to sign out: $e";
+    } finally {
+      _isLoading.value = false;
     }
   }
 

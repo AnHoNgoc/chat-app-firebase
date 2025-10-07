@@ -10,7 +10,6 @@ class FindPeopleView extends GetView<UsersListController> {
   @override
   Widget build(BuildContext context) {
 
-    print(">>> FindPeopleView build() chạy với controller: ${controller.hashCode}");
     return Scaffold(
       appBar: AppBar(
         title: Text("Find People", style: TextStyle(fontSize: 18.sp)),
@@ -48,7 +47,6 @@ class FindPeopleView extends GetView<UsersListController> {
   }
 
   Widget _buildSearchBar() {
-    print("UI đang dùng controller: ${controller.hashCode}");
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
