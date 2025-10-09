@@ -58,7 +58,7 @@ class FriendshipModel {
     );
   }
 
-  String getOtherUserid(String currentUSerId) {
+  String getOtherUserId(String currentUSerId) {
     return currentUSerId == user1Id ? user2Id : user1Id;
   }
 

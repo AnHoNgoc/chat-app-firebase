@@ -1,7 +1,6 @@
 import 'package:chat_app_fb/models/notification_model.dart';
 import 'package:chat_app_fb/routes/app_routes.dart';
 import 'package:chat_app_fb/theme/app_theme.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/user_model.dart';

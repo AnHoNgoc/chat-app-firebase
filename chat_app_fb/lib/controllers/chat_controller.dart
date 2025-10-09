@@ -3,7 +3,6 @@ import 'package:chat_app_fb/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
-import '../models/notification_model.dart';
 import '../service/fire_store_service.dart';
 import 'auth_controller.dart';
 
@@ -23,7 +22,7 @@ class ChatController extends GetxController {
   final RxBool _isLoading = false.obs;
   final RxBool _isSending = false.obs;
   final RxString _error = ''.obs;
-  final Rx<UserModel?> _otherUSer = Rx<UserModel?>(null);
+  final Rx<UserModel?> _otherUser = Rx<UserModel?>(null);
   final RxString _chatId = ''.obs;
   final RxBool _isTyping = false.obs;
   final RxBool _isChatActive = false.obs;
@@ -32,7 +31,7 @@ class ChatController extends GetxController {
   bool get isLoading => _isLoading.value;
   bool get isSending => _isSending.value;
   String get error => _error.value;
-  UserModel? get otherUser => _otherUSer.value;
+  UserModel? get otherUser => _otherUser.value;
   String get chatId => _chatId.value;
   bool get isTyping => _isTyping.value;
 
@@ -59,14 +58,14 @@ class ChatController extends GetxController {
     final arguments = Get.arguments;
     if(arguments != null){
       _chatId.value = arguments['chatId'] ?? '';
-      _otherUSer.value = arguments['otherUser'];
+      _otherUser.value = arguments['otherUser'];
       _loadMessages();
     }
   }
 
   void _loadMessages() {
     final currentUserId = _authController.user?.uid;
-    final otherUserId = _otherUSer.value?.id;
+    final otherUserId = _otherUser.value?.id;
 
     if (currentUserId != null && otherUserId != null) {
       _isLoading.value = true;
@@ -113,6 +112,7 @@ class ChatController extends GetxController {
 
       // 2. Đánh dấu tin nhắn đã đọc
       for (var message in unreadMessages) {
+        print("Da doc");
         await _fireStoreService.markMessageAsRead(message.id);
       }
 
@@ -179,7 +179,7 @@ class ChatController extends GetxController {
 
   Future<void> sendMessage() async {
     final currentUserId = _authController.user?.uid;
-    final otherUserId = _otherUSer.value?.id;
+    final otherUserId = _otherUser.value?.id;
     final content = messageController.text.trim();
     messageController.clear();
 

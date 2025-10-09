@@ -12,6 +12,8 @@ class HomeController extends GetxController {
   final FireStoreService _fireStoreService = FireStoreService();
   final AuthController _authController = Get.find<AuthController>();
 
+  String get currentUserId => _authController.user?.uid ?? '';
+
   final RxList<ChatModel> _allChats = <ChatModel>[].obs;
   final RxList<ChatModel> _filteredChats = <ChatModel>[].obs;
   final RxList<NotificationModel> _notifications = <NotificationModel>[].obs;

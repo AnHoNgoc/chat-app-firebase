@@ -2,6 +2,7 @@ import 'package:chat_app_fb/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../theme/app_theme.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class FriendListItem extends StatelessWidget {
   final UserModel friend;
@@ -37,11 +38,28 @@ class FriendListItem extends StatelessWidget {
                     child: friend.photoURL.isNotEmpty
                         ? ClipRRect(
                       borderRadius: BorderRadius.circular(28.r),
-                      child: Image.network(
-                        friend.photoURL,
+                      child: CachedNetworkImage(
+                        imageUrl: friend.photoURL,
                         width: 56.w,
                         height: 56.w,
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: Colors.grey,
+                          alignment: Alignment.center,
+                          child: Text(
+                            friend.displayName.isNotEmpty
+                                ? friend.displayName[0].toUpperCase()
+                                : '?',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     )
                         : _buildDefaultAvatar(),

@@ -18,6 +18,18 @@ class FireStoreService {
     );
   }
 
+  Stream<List<UserModel>> getUsersByIdsStream(List<String> ids) {
+    if (ids.isEmpty) return Stream.value([]);
+
+    return _fireStore
+        .collection('users')
+        .where(FieldPath.documentId, whereIn: ids)
+        .snapshots()
+        .map((snap) => snap.docs
+        .map((doc) => UserModel.fromSnapshot(doc.data(), doc.id))
+        .toList());
+  }
+
   Future<void> sendFriendRequest(FriendRequestModel request) async {
     try {
       await _fireStore.collection('friendRequests').doc(request.id).set(request.toMap());
@@ -278,7 +290,7 @@ class FireStoreService {
 
           for (var doc in snapshot1.docs){
             friendships.add(
-              FriendshipModel.fromMap(doc.data() as Map<String, dynamic>),
+              FriendshipModel.fromMap(doc.data()),
             );
           }
           for (var doc in snapshot2.docs){

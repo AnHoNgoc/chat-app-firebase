@@ -399,7 +399,5 @@ class UsersListController extends GetxController {
     }
   }
 
-  void _clearError () {
-    _error.value = '';
-  }
+
 }

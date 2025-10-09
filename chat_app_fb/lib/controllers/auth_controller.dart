@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import '../models/user_model.dart';
 import '../service/auth_service.dart';
 import '../service/user_service.dart';
-import 'home_controller.dart';
+
 
 class AuthController extends GetxController {
   

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
 
   final String id;
@@ -50,7 +52,21 @@ class UserModel {
       lastSeen: DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] ?? 0),
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] ?? 0)
     );
+
   }
+
+  factory UserModel.fromSnapshot(Map<String, dynamic> map, String id) {
+    return UserModel(
+      id: id,
+      email: map['email'] ?? '',
+      displayName: map['displayName'] ?? '',
+      photoURL: map['photoURL'] ?? '',
+      isOnline: map['isOnline'] ?? false,
+      lastSeen: DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] ?? 0),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] ?? 0),
+    );
+  }
+
 
   /// Convert UserModel → JSON (Map)
   Map<String, dynamic> toMap() {

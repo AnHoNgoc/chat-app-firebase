@@ -5,13 +5,12 @@ import 'package:chat_app_fb/models/friendship_model.dart';
 import 'package:chat_app_fb/models/user_model.dart';
 import 'package:chat_app_fb/routes/app_routes.dart';
 import 'package:chat_app_fb/service/fire_store_service.dart';
-import 'package:chat_app_fb/service/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class FriendsController extends GetxController {
+
   final FireStoreService _fireStoreService = FireStoreService();
-  final UserService _userService = UserService();
   final AuthController _authController = Get.find<AuthController>();
 
   final RxList<FriendshipModel> _friendships = <FriendshipModel>[].obs;
@@ -67,44 +66,39 @@ class FriendsController extends GetxController {
   void _loadFriends() {
     final currentUserId = _authController.user?.uid;
     if (currentUserId != null) {
-      _isLoading.value = true; // 🔹 bật loading ngay từ đầu
+      _isLoading.value = true;
 
       _friendshipsSubscriptions?.cancel();
       _friendshipsSubscriptions = _fireStoreService.getFriendsStream(currentUserId)
           .listen((friendshipList) async {
         _friendships.value = friendshipList;
         await _loadFriendDetails(currentUserId, friendshipList);
-        _isLoading.value = false; // 🔹 tắt sau khi có dữ liệu
+        _isLoading.value = false;
       });
     }
   }
 
+
   Future<void> _loadFriendDetails(
-    String currentUserId,
-    List<FriendshipModel> friendshipList
-  ) async {
-    try {
-      _isLoading.value = true;
-      List<UserModel> friendUsers = [];
+      String currentUserId,
+      List<FriendshipModel> friendshipList
+      ) async {
 
-      final futures = friendshipList.map((friendship) async {
-        String friendId = friendship.getOtherUserid(currentUserId);
-        return await _userService.getUserModel(friendId);
-      }).toList();
+    final friendIds = friendshipList.map((f) => f.getOtherUserId(currentUserId)).toList();
 
-      final results = await Future.wait(futures);
-      for (var friend in results) {
-        if(friend != null){
-          friendUsers.add(friend);
-        }
-      }
-      _friends.value = friendUsers;
-      _filterFriends();
-    } catch (e) {
-      _error.value = e.toString();
-    } finally {
-      _isLoading.value = false;
+    if (friendIds.isEmpty) {
+      _friends.clear();
+      _filteredFriends.clear();
+      return;
     }
+
+    // bindStream realtime từ Firestore
+    _friends.bindStream(
+        _fireStoreService.getUsersByIdsStream(friendIds)
+    );
+
+    // Khi _friends thay đổi, cập nhật filteredFriends
+    ever<List<UserModel>>(_friends, (_) => _filterFriends());
   }
 
 

@@ -371,24 +371,23 @@ class HomeView extends GetView<HomeController> {
                 itemCount: controller.chats.length,
                 separatorBuilder: (context, index) =>
                     Divider(height: 1.h, color: Colors.grey[200], indent: 72.w),
-                itemBuilder: (context, index) {
-                  final chat = controller.chats[index];
-                  final otherUser = controller.getOtherUser(chat);
+                  itemBuilder: (context, index) {
+                    final chat = controller.chats[index];
+                    final otherUserId = chat.getOtherParticipant(controller.currentUserId);
 
-                  if (otherUser == null) {
-                    return SizedBox.shrink();
-                  }
+                    return Obx(() {
+                      final otherUser = controller.users[otherUserId];
+                      if (otherUser == null) return SizedBox.shrink();
 
-                  return AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    child: ChatListItem(
+                      return ChatListItem(
                         chat: chat,
                         otherUser: otherUser,
-                        lastMessageTime: controller
-                            .formatLastMessageTime(chat.lastMessageTime),
-                        onTap: () => controller.openChat(chat)),
-                  );
-                },
+                        lastMessageTime:
+                        controller.formatLastMessageTime(chat.lastMessageTime),
+                        onTap: () => controller.openChat(chat),
+                      );
+                    });
+                  }
               ))
         ],
       ),
