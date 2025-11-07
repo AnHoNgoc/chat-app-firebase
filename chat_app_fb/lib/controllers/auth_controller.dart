@@ -103,7 +103,10 @@ class AuthController extends GetxController {
       );
 
       _userModel.value = userModel;
+
+      // Navigation sau khi login thành công
       Get.offAllNamed(AppRoutes.main);
+
       return null; // success
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -122,7 +125,6 @@ class AuthController extends GetxController {
       _isLoading.value = false;
     }
   }
-
   // CHANGE PASSWORD
   Future<String?> changePassword({
     required String oldPassword,

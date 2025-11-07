@@ -19,6 +19,8 @@ class _ChatViewState extends State<ChatView> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
     chatId = Get.arguments?['chatId'] ?? '';
 
     if (!Get.isRegistered<ChatController>(tag: chatId)) {
@@ -367,6 +369,7 @@ class _ChatViewState extends State<ChatView> with WidgetsBindingObserver {
   }
 
   void _showEditDialog(dynamic message) {
+
     final editController = TextEditingController(text: message.content);
 
     Get.dialog(

@@ -1,5 +1,6 @@
 import 'package:chat_app_fb/models/message_model.dart';
 import 'package:chat_app_fb/models/user_model.dart';
+import 'package:chat_app_fb/service/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
@@ -59,6 +60,7 @@ class ChatController extends GetxController {
     if(arguments != null){
       _chatId.value = arguments['chatId'] ?? '';
       _otherUser.value = arguments['otherUser'];
+
       _loadMessages();
     }
   }
@@ -74,10 +76,11 @@ class ChatController extends GetxController {
           _fireStoreService.getMessagesStream(currentUserId, otherUserId)
       );
 
-      ever(_messages, (List<MessageModel> messageList) {
+      ever(_messages, (List<MessageModel> messageList) async {
         _isLoading.value = false;
         if (_isChatActive.value) {
           _markUnreadMessagesAsRead(messageList);
+
         }
         _scrollToBottom();
       });
@@ -115,10 +118,8 @@ class ChatController extends GetxController {
         print("Da doc");
         await _fireStoreService.markMessageAsRead(message.id);
       }
-
-      // 4. Reset unreadCount trong ChatModel
+      // // 4. Reset unreadCount trong ChatModel
       if (_chatId.value.isNotEmpty) {
-        print('Calling restoreUnreadCount with chatId: ${_chatId.value}, userId: $currentUserId');
         await _fireStoreService.restoreUnreadCount(_chatId.value, currentUserId);
       }
 
@@ -131,6 +132,7 @@ class ChatController extends GetxController {
       print("Error marking messages as read: $e");
     }
   }
+
 
 
   Future <void> deleteChat() async {
@@ -181,6 +183,7 @@ class ChatController extends GetxController {
     final currentUserId = _authController.user?.uid;
     final otherUserId = _otherUser.value?.id;
     final content = messageController.text.trim();
+    final otherUser = _otherUser.value;
     messageController.clear();
 
     if (currentUserId == null || otherUserId == null || content.isEmpty) {
@@ -205,7 +208,20 @@ class ChatController extends GetxController {
         timestamp: DateTime.now(),
       );
 
+      // 1. Gửi message lên Firestore
       await _fireStoreService.sendMessage(message);
+
+      // 2. Gửi push notification
+      if (otherUser != null) {
+        await NotificationService().sendPushToUser(
+          receiverId: otherUser.id,
+          senderId: currentUserId,
+          chatRoomId: _chatId.value,
+          title: 'New message',
+          messageText: content,
+        );
+      }
+
       _isTyping.value = false;
       _scrollToBottom();
 

@@ -500,17 +500,25 @@ class FireStoreService {
   }
 
   Future<void> restoreUnreadCount(String chatId, String userId) async {
-    print("Da doc tin nhan");
-    try{
-      await _fireStore.collection('chats').doc(chatId).update({
-        'unreadCount.$userId': 0,
+    final docRef = _fireStore.collection('chats').doc(chatId);
+
+    try {
+      await _fireStore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(docRef);
+        if (!snapshot.exists) return;
+
+        final data = snapshot.data()!;
+        final unreadMap = (data['unreadCount'] as Map<String, dynamic>?) ?? {};
+        unreadMap[userId] = 0;
+
+        transaction.update(docRef, {'unreadCount': unreadMap});
       });
 
-    }catch (e) {
-      throw Exception('Failed to rest unread count: ${e.toString()}');
+      print('Đã giảm về 0 (transaction)');
+    } catch (e) {
+      print('Failed to restore unread count: $e');
     }
   }
-
   //MESSAGE
   Future<void>  sendMessage(MessageModel message) async {
     try {

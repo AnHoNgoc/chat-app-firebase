@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../api/firebase_api.dart';
 import '../models/user_model.dart';
+import 'notification_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -49,14 +51,21 @@ class AuthService {
         email: email,
         password: password,
       );
-      final uid = userCredential.user!.uid;
+      final user = userCredential.user!;
+      final uid = user.uid;
 
+      // Cập nhật trạng thái online
       await _fireStore.collection('users').doc(uid).update({
         'isOnline': true,
       });
 
+      final token = FirebaseApi.instance.fcmToken;
+      if (token != null) {
+        await NotificationService().saveFcmToken(token);
+      }
       final snapshot = await _fireStore.collection('users').doc(uid).get();
       return UserModel.fromMap(snapshot.data()!);
+
     } on FirebaseAuthException catch (e) {
       throw e;
     } catch (e) {
